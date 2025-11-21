@@ -5,7 +5,7 @@ import { validationResult } from 'express-validator';
 import { pool } from '../config/database.js';
 
 const applicationController = {
-  // Apply to course - UPDATED WITH SAFETY CHECKS
+
   applyToCourse: async (req, res) => {
     const connection = await pool.getConnection();
     try {
@@ -31,7 +31,7 @@ const applicationController = {
       }
 
       const studentId = req.user.profile.id;
-      console.log('🎯 Application Controller - Using student ID:', studentId);
+      console.log(' Application Controller - Using student ID:', studentId);
 
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -44,7 +44,7 @@ const applicationController = {
 
       const { courseId, preferredMajor, personalStatement, documents } = req.body;
       
-      console.log('🎯 Application Controller - Received application data:', {
+      console.log(' Application Controller - Received application data:', {
         courseId,
         preferredMajor,
         personalStatementLength: personalStatement?.length
@@ -67,7 +67,7 @@ const applicationController = {
         });
       }
 
-      console.log('✅ Application Controller - Course found:', course.name);
+      console.log('Application Controller - Course found:', course.name);
 
       // Check if course is active
       if (!course.is_active) {
@@ -101,7 +101,7 @@ const applicationController = {
         });
       }
 
-      // Check if student can apply to more courses in this institute
+      // Checking if student can apply to more courses in this institute
       const applicationStatus = await Student.canApplyToInstitute(studentId, course.institute_id);
       if (!applicationStatus.canApply) {
         return res.status(400).json({
@@ -110,9 +110,9 @@ const applicationController = {
         });
       }
 
-      console.log('✅ Application Controller - Student can apply, remaining slots:', applicationStatus.remainingSlots);
+      console.log(' Application Controller - Student can apply, remaining slots:', applicationStatus.remainingSlots);
 
-      // Check if student already applied to this course in current admission period
+      // Checking if student already applied to this course
       const currentYear = new Date().getFullYear();
       const [existingApplication] = await connection.execute(
         `SELECT a.* 
@@ -138,13 +138,12 @@ const [admissionPeriods] = await connection.execute(
   [course.institute_id]
 );
 
-// ✅ FIX: Initialize admissionPeriod variable first
 let admissionPeriod;
 
 if (admissionPeriods.length === 0) {
   console.log('⚠️ No active admission period found, using fallback');
   
-  // Try to get ANY admission period for this institute
+  //getting admission period for this institute
   const [anyPeriods] = await connection.execute(
     `SELECT * FROM admission_periods 
      WHERE institute_id = ? 
@@ -153,15 +152,15 @@ if (admissionPeriods.length === 0) {
   );
   
   if (anyPeriods.length > 0) {
-    // Use existing period and make it active
+  
     admissionPeriod = anyPeriods[0];
     await connection.execute(
       'UPDATE admission_periods SET status = "active" WHERE id = ?',
       [admissionPeriod.id]
     );
-    console.log('✅ Activated existing admission period:', admissionPeriod.name);
+    console.log(' Activated existing admission period:', admissionPeriod.name);
   } else {
-    // Create a new admission period
+    // Creating  new admission period
     const [newPeriod] = await connection.execute(
       `INSERT INTO admission_periods (institute_id, name, start_date, end_date, status) 
        VALUES (?, 'Auto-Created Admissions', CURDATE(), DATE_ADD(CURDATE(), INTERVAL 1 YEAR), 'active')`,
@@ -171,15 +170,15 @@ if (admissionPeriods.length === 0) {
       id: newPeriod.insertId,
       name: 'Auto-Created Admissions'
     };
-    console.log('✅ Created new admission period:', admissionPeriod.id);
+    console.log(' Created new admission period:', admissionPeriod.id);
   }
 } else {
   admissionPeriod = admissionPeriods[0];
-  console.log('✅ Application Controller - Admission period found:', admissionPeriod.name);
+  console.log(' Application Controller - Admission period found:', admissionPeriod.name);
 }
 
-// ✅ NOW it's safe to use admissionPeriod
-console.log('✅ Application Controller - Admission period:', admissionPeriod.name);
+
+console.log(' Application Controller - Admission period:', admissionPeriod.name);
 
 
       // Create application
@@ -193,7 +192,7 @@ console.log('✅ Application Controller - Admission period:', admissionPeriod.na
         documents: documents || []
       });
 
-      console.log('✅ Application Controller - Application created with ID:', applicationId);
+      console.log('Application Controller - Application created with ID:', applicationId);
 
       // Track application for institute limit
       await Student.trackApplication(studentId, course.institute_id, courseId);
@@ -206,7 +205,7 @@ console.log('✅ Application Controller - Admission period:', admissionPeriod.na
 
       await connection.commit();
 
-      console.log('🎉 Application Controller - Application submitted successfully!');
+      console.log(' Application Controller - Application submitted successfully!');
 
       res.status(201).json({
         success: true,
@@ -219,8 +218,8 @@ console.log('✅ Application Controller - Admission period:', admissionPeriod.na
 
     } catch (error) {
       await connection.rollback();
-      console.error('❌ Application Controller - Error:', error);
-      console.error('❌ Application Controller - Error stack:', error.stack);
+      console.error(' Application Controller - Error:', error);
+      console.error(' Application Controller - Error stack:', error.stack);
       res.status(500).json({
         success: false,
         message: 'Failed to submit application. Please try again.'
@@ -233,8 +232,8 @@ console.log('✅ Application Controller - Admission period:', admissionPeriod.na
   // Get student applications - UPDATED WITH SAFETY CHECK
   getStudentApplications: async (req, res) => {
     try {
-      console.log('📋 Application Controller - Getting student applications...');
-      console.log('📋 Application Controller - req.user:', req.user);
+      console.log('Application Controller - Getting student applications...');
+      console.log(' Application Controller - req.user:', req.user);
 
       // Safety check
       if (!req.user || !req.user.profile || !req.user.profile.id) {
@@ -261,10 +260,10 @@ console.log('✅ Application Controller - Admission period:', admissionPeriod.na
     }
   },
 
-  // Get institute applications - UPDATED WITH SAFETY CHECK
+  // Get institute applications
   getInstituteApplications: async (req, res) => {
     try {
-      console.log('🏫 Application Controller - Getting institute applications...');
+      console.log('Application Controller - Getting institute applications...');
       
       // Safety check
       if (!req.user || !req.user.profile || !req.user.profile.id) {
@@ -358,7 +357,7 @@ console.log('✅ Application Controller - Admission period:', admissionPeriod.na
     }
   },
 
-  // Update application status (Institute only) - UPDATED WITH SAFETY CHECK
+  // Updating application status
   updateApplicationStatus: async (req, res) => {
     const connection = await pool.getConnection();
     try {
@@ -395,7 +394,7 @@ console.log('✅ Application Controller - Admission period:', admissionPeriod.na
 
       const application = applications[0];
 
-      // If accepting application, check if student is already accepted elsewhere
+      // checking if student is already accepted elsewhere
       if (status === 'accepted') {
         const [otherAcceptances] = await connection.execute(
           `SELECT i.name 
@@ -446,7 +445,7 @@ console.log('✅ Application Controller - Admission period:', admissionPeriod.na
     }
   },
 
-  // Withdraw application - UPDATED WITH SAFETY CHECK
+  // Withdraw application
   withdrawApplication: async (req, res) => {
     const connection = await pool.getConnection();
     try {
