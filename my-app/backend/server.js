@@ -7,7 +7,6 @@ config();
 
 import { testConnection } from './config/database.js';
 
-// Import all routes
 import authRoutes from './routes/auth.js';
 import instituteRoutes from './routes/institutes.js';
 import studentRoutes from './routes/students.js';
@@ -32,10 +31,8 @@ app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// Test database connection on startup
 testConnection();
 
-// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/institutes', instituteRoutes);
 app.use('/api/students', studentRoutes);
@@ -63,7 +60,7 @@ app.get('/api/test', (req, res) => {
   });
 });
 
-// Simple 404 handler
+// 404 errot handler
 app.use((req, res) => {
   res.status(404).json({
     success: false,
@@ -75,7 +72,6 @@ app.use((req, res) => {
 app.use((error, req, res, next) => {
   console.error('Global error handler:', error);
   
-  // MySQL duplicate entry error
   if (error.code === 'ER_DUP_ENTRY') {
     return res.status(409).json({
       success: false,
@@ -101,11 +97,11 @@ app.use((error, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📚 Career Guidance Platform API`);
-  console.log(`🔗 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`📍 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:3000'}`);
-  console.log('\n📋 Available Routes:');
+  console.log(` Server running on port ${PORT}`);
+  console.log(` Career Guidance Platform API`);
+  console.log(` Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(` Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:3000'}`);
+  console.log(' Available Routes:');
   console.log('   POST   /api/auth/register');
   console.log('   POST   /api/auth/login');
   console.log('   GET    /api/auth/me');
@@ -114,7 +110,7 @@ app.listen(PORT, () => {
   console.log('   GET    /api/students/profile');
   console.log('   POST   /api/applications/apply');
   console.log('   GET    /api/admin/stats');
-  console.log('\n🔍 Test the server:');
+  console.log(' Test the server:');
   console.log(`   Health: http://localhost:${PORT}/api/health`);
   console.log(`   Test: http://localhost:${PORT}/api/test`);
 });
