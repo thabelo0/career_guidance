@@ -53,8 +53,6 @@ const admissionController = {
 
       const instituteId = req.user.profile.id;
       const { name, start_date, end_date } = req.body;
-
-      // Validate dates
       const startDate = new Date(start_date);
       const endDate = new Date(end_date);
       
@@ -72,7 +70,7 @@ const admissionController = {
         });
       }
 
-      // Check for overlapping admission periods
+      // Checking for overlapping admission periods
       const [overlapping] = await pool.execute(
         `SELECT id FROM admission_periods 
          WHERE institute_id = ? AND status != 'closed' 
@@ -120,7 +118,7 @@ const admissionController = {
     }
   },
 
-  // Update admission period
+  // Updating admission period
   updateAdmissionPeriod: async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -136,7 +134,7 @@ const admissionController = {
       const instituteId = req.user.profile.id;
       const { status } = req.body;
 
-      // Verify admission period belongs to institute
+      // Verifying admission period belongs to institute
       const [periods] = await pool.execute(
         'SELECT * FROM admission_periods WHERE id = ? AND institute_id = ?',
         [id, instituteId]
@@ -153,18 +151,17 @@ const admissionController = {
 
       // Validate status transition
       if (status === 'closed' && period.status === 'active') {
-        // Close admission period and reject pending applications
         const connection = await pool.getConnection();
         await connection.beginTransaction();
 
         try {
-          // Update admission period status
+          // Updating admission period status
           await connection.execute(
             'UPDATE admission_periods SET status = ? WHERE id = ?',
             [status, id]
           );
 
-          // Reject all pending applications for this period
+          // Rejecting all pending applicationss
           await connection.execute(
             `UPDATE applications 
              SET status = 'rejected', review_notes = 'Application rejected: Admission period closed'
@@ -180,7 +177,7 @@ const admissionController = {
           connection.release();
         }
       } else {
-        // Simple status update
+        // Status update
         await pool.execute(
           'UPDATE admission_periods SET status = ? WHERE id = ?',
           [status, id]
@@ -201,13 +198,13 @@ const admissionController = {
     }
   },
 
-  // Publish admissions (set status to active)
+  // Publish admissions
   publishAdmissions: async (req, res) => {
     try {
       const { id } = req.params;
       const instituteId = req.user.profile.id;
 
-      // Verify admission period belongs to institute
+      // Verifying admission period belongs to institute
       const [periods] = await pool.execute(
         'SELECT * FROM admission_periods WHERE id = ? AND institute_id = ?',
         [id, instituteId]
