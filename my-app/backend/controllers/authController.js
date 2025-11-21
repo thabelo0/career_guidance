@@ -63,10 +63,10 @@ const authController = {
     }
   },
 
-  // Login user - WITHOUT TOKEN (SINGLE METHOD - NO DUPLICATE)
+  // Login user
   login: async (req, res) => {
     try {
-      console.log('🔐 Login attempt for:', req.body.email);
+      console.log(' Login attempt for:', req.body.email);
       
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -91,11 +91,11 @@ const authController = {
         });
       }
 
-      console.log('✅ User found:', user.id, user.name);
+      console.log('User found:', user.id, user.name);
 
       // Check user type
       if (user.user_type !== userType) {
-        console.log('❌ User type mismatch:', user.user_type, '!=', userType);
+        console.log(' User type mismatch:', user.user_type, '!=', userType);
         return res.status(401).json({
           success: false,
           message: `Invalid user type. This email is registered as ${user.user_type}`
@@ -103,31 +103,31 @@ const authController = {
       }
 
       // Check password
-      console.log('🔑 Checking password...');
+      console.log(' Checking password...');
       const isPasswordValid = await User.comparePassword(password, user.password);
       
       if (!isPasswordValid) {
-        console.log('❌ Invalid password');
+        console.log(' Invalid password');
         return res.status(401).json({
           success: false,
           message: 'Invalid email or password'
         });
       }
 
-      console.log('✅ Password valid');
+      console.log(' Password valid');
 
       // Get user profile based on type
       let profile = null;
       if (userType === 'student') {
-        console.log('📚 Getting student profile...');
+        console.log(' Getting student profile...');
         profile = await Student.findByUserId(user.id);
       } else if (userType === 'institute') {
-        console.log('🏫 Getting institute profile...');
+        console.log(' Getting institute profile...');
         profile = await Institute.findByUserId(user.id);
       }
-      console.log('✅ Profile found:', profile ? 'Yes' : 'No');
+      console.log(' Profile found:', profile ? 'Yes' : 'No');
 
-      console.log('🎉 Login successful for user:', user.id);
+      console.log('Login successful for user:', user.id);
       
       // Return success WITHOUT token
       res.json({
@@ -146,8 +146,8 @@ const authController = {
       });
 
     } catch (error) {
-      console.error('❌ Login error:', error);
-      console.error('❌ Error stack:', error.stack);
+      console.error(' Login error:', error);
+      console.error(' Error stack:', error.stack);
       res.status(500).json({
         success: false,
         message: 'Login failed. Please try again.'
