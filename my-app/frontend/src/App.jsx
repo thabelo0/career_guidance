@@ -1,31 +1,88 @@
 import React from 'react'
-import { Routes, Route, Link } from 'react-router-dom'
-import OrdersPage from './pages/OrdersPage'
-import Home from './pages/Home'
-import About from './pages/About'
-import Review from './pages/review'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { AuthProvider } from './contexts/AuthContext'
+//import Layout from './components/Layout/Layout'
 
-export default function App() {
+// Auth Pages
+import Login from './pages/Auth/Login'
+import Register from './pages/Auth/Register'
+
+// Main Pages
+import Home from './pages/Home/Home'
+import Institutes from './pages/Institutes/Institutes'
+
+// Dashboard Pages
+import Dashboard from './pages/Dashboard/Dashboard'
+
+// Management Pages
+import InstituteManagement from './pages/InstituteManagement/InstituteManagement'
+import AdmissionManagement from './pages/AdmissionManagement/AdmissionManagement'
+
+// Application Pages
+import Applications from './pages/Applications/Applications'
+import CourseApplication from './pages/CourseApplication/CourseApplication'
+
+// Profile Pages
+import Profile from './pages/Profile/Profile'
+
+// Components
+import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'
+
+function App() {
   return (
-    <div className="app">
-      <header className="app-header">
-        <h1>Sweet Crust Bakery</h1>
-        <nav>
-          <Link to="/">Home</Link>
-          <Link to="/orders">Orders</Link>
-          <Link to="/about">About</Link>
-          <Link to="/review">Review</Link>
-        </nav>
-      </header>
+    <AuthProvider>
+      <Router>
+      {/* <Layout> */}
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/institutes" element={<Institutes />} />
 
-      <main className="app-main">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/orders" element={<OrdersPage />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/review" element={<Review />} />
-        </Routes>
-      </main>
-    </div>
+            {/* Protected Routes - All Users */}
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/applications" element={
+              <ProtectedRoute>
+                <Applications />
+              </ProtectedRoute>
+            } />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            } />
+
+            {/* Protected Routes - Course Application */}
+            <Route path="/apply/:instituteId/:courseId" element={
+              <ProtectedRoute>
+                <CourseApplication />
+              </ProtectedRoute>
+            } />
+
+            {/* Protected Routes - Admin & Institute Management */}
+            <Route path="/manage-institutes" element={
+              <ProtectedRoute>
+                <InstituteManagement />
+              </ProtectedRoute>
+            } />
+            <Route path="/manage-admissions" element={
+              <ProtectedRoute>
+                <AdmissionManagement />
+              </ProtectedRoute>
+            } />
+
+            {/* Catch all route - redirect to home */}
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        {/* </Layout> */}
+      </Router>
+    </AuthProvider>
   )
 }
+
+export default App

@@ -1,0 +1,116 @@
+.course-application {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.application-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.application-header h1 {
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.application-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.course-info {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.course-info h3 {
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.requirements {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+.requirements h4 {
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+}
+
+.requirements ul {
+  padding-left: 1.5rem;
+  color: #7f8c8d;
+}
+
+.eligibility-message {
+  padding: 1rem;
+  border-radius: 4px;
+  margin-top: 1rem;
+  font-weight: bold;
+}
+
+.eligibility-message.eligible {
+  background: #d5f4e6;
+  color: #27ae60;
+}
+
+.eligibility-message.not-eligible {
+  background: #fadbd8;
+  color: #e74c3c;
+}
+
+.application-form {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.application-form h3 {
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.application-form textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #bdc3c7;
+  border-radius: 4px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.documents-upload {
+  margin-top: 0.5rem;
+}
+
+.application-warnings {
+  margin: 1.5rem 0;
+}
+
+.warning {
+  background: #fff3cd;
+  color: #856404;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  border-left: 4px solid #ffc107;
+}
+
+.btn-large {
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .application-content {
+    grid-template-columns: 1fr;
+  }
+}

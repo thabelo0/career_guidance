@@ -1,0 +1,13 @@
+.institute-dashboard .application-item {
+  align-items: flex-start;
+}
+
+.application-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-small {
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+}
